@@ -19,6 +19,7 @@ fullname=$(basename "$1")
 ext="${fullname##*.}"
 filename="${fullname%.*}"
 exe="${filename}"
+comp=""
 
 # Input validation
 if [[ $# != 1 ]]; then
@@ -26,6 +27,7 @@ if [[ $# != 1 ]]; then
     exit 1
 fi
 
+# Wrong extensions?
 if [ ! -f $fullname ]; then
     count=`ls -1 *.flac 2>/dev/null | wc -l`
 
@@ -38,23 +40,28 @@ if [ ! -f $fullname ]; then
     exit 1
 fi
 
+# Print file to stdout with syntax highlighting
+log "Printing $fullname"
+pygmentize $fullname
+ok
+
 # Compiling the code
 if [[ $ext == "c" ]]; then
     log "Compiling c"
     echo
-    `gcc ${fullname} -o ${exe}.out`
+    comp="$(gcc ${fullname} -o ${exe}.out 2>&1)"
     exe="./${exe}.out"
     ok
 elif [[ $ext == "cpp" ]]; then
     log "Compiling c++"
     echo
-    `g++ ${fullname} -o ${exe}.out`
+    comp="$(g++ ${fullname} -o ${exe}.out 2>&1)"
     exe="./${exe}.out"
     ok
 elif [[ $ext == "java" ]]; then
     log "Compiling Java"
     echo
-    `javac ${fullname}`
+    comp="$(javac ${fullname} 2>&1)"
     exe="java $filename"
     ok
 else
@@ -62,10 +69,27 @@ else
     exit 1
 fi
 
+# Check compilation errors
+if [[ $comp != "" ]]; then
+    log "Compilation errors: $comp"
+    fail
+    exit 1
+fi
+
+# run the program
 log "Running the program"
     echo
-    # run it
-    $exe
+    # separate stdout from stderr
+    exec 3>&1
+    runerr="$($exe 2>&1 1>&3)"
+    exec 3>&-
 ok
+
+# check for run errors
+if [[ $runerr != "" ]]; then
+    log "Run errors: $runerr"
+    fail
+    exit 1
+fi
 
 exit 0
