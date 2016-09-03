@@ -16,10 +16,9 @@ source '/usr/lib/smartlog/smartlog.sh'
 
 # filename parsing
 fullname=$(basename "$1")
-ext="${filename##*.}"
-echo $ext
+ext="${fullname##*.}"
 filename="${fullname%.*}"
-exe="${filename}.out"
+exe="${filename}"
 
 # Input validation
 if [[ $# != 1 ]]; then
@@ -27,7 +26,7 @@ if [[ $# != 1 ]]; then
     exit 1
 fi
 
-if [ ! -f $1 ]; then
+if [ ! -f $fullname ]; then
     count=`ls -1 *.flac 2>/dev/null | wc -l`
 
     if [ count != 0 ]; then
@@ -39,22 +38,20 @@ if [ ! -f $1 ]; then
     exit 1
 fi
 
-echo "$extension"
-
 # Compiling the code
-if [[ $ext == ".c" ]]; then
+if [[ $ext == "c" ]]; then
     log "Compiling c"
     echo
-    `gcc ${fullname} -o $exe`
-    exe="./$exe"
+    `gcc ${fullname} -o ${exe}.out`
+    exe="./${exe}.out"
     ok
-elif [[ $ext == ".cpp" ]]; then
+elif [[ $ext == "cpp" ]]; then
     log "Compiling c++"
     echo
-    `g++ ${fullname} -o $exe`
-    exe="./$exe"
+    `g++ ${fullname} -o ${exe}.out`
+    exe="./${exe}.out"
     ok
-elif [[ $ext == ".java" ]]; then
+elif [[ $ext == "java" ]]; then
     log "Compiling Java"
     echo
     `javac ${fullname}`
@@ -66,9 +63,9 @@ else
 fi
 
 log "Running the program"
-echo
-# run it
-$exe
+    echo
+    # run it
+    $exe
 ok
 
 exit 0
