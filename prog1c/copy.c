@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     size_t sourceSize = sourceSt.st_size;
 
     // Buffer set up
-    unsigned char buffer[1];
+    unsigned char buffer[32];
     size_t bytesRead = 0;
     size_t totalBytesRead = 0;
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     while ((bytesRead = fread(buffer, 1, sizeof(buffer), source)) > 0)
     {
         // Copy buffer chunk worth of file
-        fwrite(buffer, sizeof(buffer), 1, dest);
+        fwrite(buffer, bytesRead, 1, dest);
 
         // Update meta data progress
         totalBytesRead += bytesRead;
