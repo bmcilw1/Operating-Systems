@@ -17,28 +17,33 @@ int main(int argc, char *argv[])
 {
     // Input validation
     if (argc != 3) {
+        // Syscall: write
         fprintf(stderr, "Usage: source_file destination_file\n");
     }
 
     // Try to open source file
+    // Syscall: malloc
     FILE *source = fopen(argv[1], "rb");
 
     // If unable to open source file fail program
     if (source == 0) {
+        // Syscall: write
         fprintf(stderr, "Error: unable to open %s for reading.\n", argv[1]);
     }
 
     // Try to open destination file
+    // Syscall: malloc, chmod
     FILE *dest = fopen(argv[2], "wb");
 
     // If unable to open destination file fail program
     if (dest == 0) {
+        // Syscall: write
         fprintf(stderr, "Error: unable to open %s for writing.\n", argv[2]);
     }
 
     // Get source file size used for progress bar
     struct stat sourceSt;
-    // stat: direct sys call
+    // Syscall: direct syscall stat
     stat(argv[1], &sourceSt);
     size_t sourceSize = sourceSt.st_size;
 
@@ -51,9 +56,11 @@ int main(int argc, char *argv[])
     float progress = 0.0;
     int prog = 0; 
 
+    // Syscall: read
     while ((bytesRead = fread(buffer, 1, sizeof(buffer), source)) > 0)
     {
         // Copy buffer chunk worth of file
+        // Syscall: write
         fwrite(buffer, bytesRead, 1, dest);
 
         // Update meta data progress
@@ -61,6 +68,7 @@ int main(int argc, char *argv[])
         prog = 64 * ((totalBytesRead * 1.0) / (sourceSize * 1.0));
 
         // Update progress bar
+        // Syscall: write
         printf("[");
         for (int i = 0; i <= 64; ++i) {
             if (i <= prog) {
@@ -73,9 +81,12 @@ int main(int argc, char *argv[])
         printf("]\r");
     }
 
+    // Syscall: write
     printf("\n");
 
+    // Syscall: close
     fclose(dest);
     fclose(source);
+
     return 0;
 }
