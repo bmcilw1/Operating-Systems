@@ -70,7 +70,8 @@ int main(int argc, char *argv[])
         // Update progress bar
         // Syscall: write
         printf("[");
-        for (int i = 0; i <= 64; ++i) {
+	int i;
+        for (i = 0; i <= 64; ++i) {
             if (i <= prog) {
                 printf("=");
             }
