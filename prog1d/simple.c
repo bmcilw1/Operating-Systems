@@ -13,20 +13,20 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-int simple init(void)
+int simple_init(void)
 {
-    printk(KERN INFO "Loading Module\n");
+    printk(KERN_INFO "Loading Module\n");
     return 0;
 }
 
-void simple exit(void)
+void simple_exit(void)
 {
-    printk(KERN INFO "Removing Module\n");
+    printk(KERN_INFO "Removing Module\n");
 }
 
-module init(simple init);
-module exit(simple exit);
+module_init(simple_init);
+module_exit(simple_exit);
 
-MODULE LICENSE("GPL");
-MODULE DESCRIPTION("Simple Module");
-MODULE AUTHOR("SGG");
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Simple Module");
+MODULE_AUTHOR("SGG");
