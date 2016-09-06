@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     }
 
     // Try to open source file
-    // Syscall: malloc
+    // Syscall: read
     FILE *source = fopen(argv[1], "rb");
 
     // If unable to open source file fail program
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     }
 
     // Try to open destination file
-    // Syscall: malloc, chmod
+    // Syscall: read
     FILE *dest = fopen(argv[2], "wb");
 
     // If unable to open destination file fail program
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     // Get source file size used for progress bar
     struct stat sourceSt;
-    // Syscall: direct syscall stat
+    // Syscall: stat
     stat(argv[1], &sourceSt);
     size_t sourceSize = sourceSt.st_size;
 
@@ -70,7 +70,8 @@ int main(int argc, char *argv[])
         // Update progress bar
         // Syscall: write
         printf("[");
-        for (int i = 0; i <= 64; ++i) {
+	int i;
+        for (i = 0; i <= 64; ++i) {
             if (i <= prog) {
                 printf("=");
             }
