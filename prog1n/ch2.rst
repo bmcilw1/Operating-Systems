@@ -176,7 +176,7 @@ System Programs
 
  * System programs are implemented to handle the most important / freq syscalls, or to perform simple operations that require a few syscalls.
 
- * You may have seen some sys programs you recongnize in the form of 
+ * You may have seen some sys programs you recongnize in the form of ...
 
 Questions
 ========
@@ -195,3 +195,129 @@ Questions
 
     + This is to allow many of the same syscalls to function on devices as well as on a file, i.e. you don't need to implement a special read() call for a device,
       since you already have one for a file.
+
+OS Designs and Implementation
+==========================
+
+Design Goals
+-------------
+
+ * Relates back to perspectives on OS: user and system
+
+ * The user goals are concerned with user-end desires: speed, ease-of-use, safety.
+
+ * The sys goals are concerned with the people who write OS. It should be easy to maintain, efficient, etc.
+
+Mechanisms and Policies
+--------------------
+ * ``policy``: what to do
+
+ * ``mechanism``: how to do it
+
+ * *If the temp rises above threshold, moderate the temp* is a policy; but *slow the clock speed to minimum* and 
+   *shutdown the machiene* are  mechanisms separate from the policy.
+
+ * We desire separation policy an mechanism for flexibility in the operations of the sys as standards evolve and hardware changes
+
+Implementation
+-------------
+
+ * Early OS were written in assembly.
+
+ * Now written in higher-level languages such as C or C++
+
+ * All kernels of major OS are written in C
+
+ * OS courses are normally taught in C for that reason
+
+OS System Structure
+===================
+
+Structures
+~~~~~~~~~~
+
+ * monolithic
+
+ * layered
+
+ * microkernel
+
+Monolithic
+----------
+ * In a monolithic kernel, all functionality is built into a single entity
+
+ * MS-DOS and early UNIX were monolithic because of limited hardware
+
+ * Monolithic kernels are difficult to maintain; they are inflexible because changes in hardware require changes in kernel code.
+
+Layered Approach
+----------------
+
+ * In a layered approach, the functionality is built upon layers, The higher layers call lower layers, etc
+
+ * Layered approach can be hard to develop; requires strategy.
+
+ * EX: swap vs. CPU scheduling. Which one should go first?
+
+Microkernels
+------------
+ * A microkernel supports mainly IPC, and minimal memory and process management. All extensions are developed in user space.
+
+ * Advantages include a smaller, more portable, and more secure kernel, since it is small.
+
+ * The message-passing IPC framework can introduce unwanted overhead. Windows NT had a microkernel that suffered performance-wise due to
+   sys-function overhead.
+
+Modules
+-------
+
+ * Some kernels are modular. Linux, for example. Modules can be listed with ``lsmod``, inserted and removed with ``modprobe``. These modules are
+   primarily for device drivers and filesystems.
+
+ * Modular designs are a fusion of layered/microkernel approaches.
+
+Hybrid Systems
+-------------
+
+ * Mac OS X is a layered system with Aqua GUI, Cocoa for Objective-C, and has a Mach microkernel and BSD (Berkeley Software Distribution) Unix kernel.
+
+ * iOS uses a similar structure, but has media services built on top of its core services.
+
+ * Android rests on a Linux kernel. Uses an android runtime environment with core libraries and Dalvik VM; also SQLite, openGL, libc etc. libraries.
+
+OS Debugging
+============
+
+ * Kernel supports printing of various messages; in Linux these are accessed via the `dmesg`` command.
+
+ * Kernels also dump info to terminal if nessiscary (core dump)
+
+OS Generation
+============
+ * Refers to generation of an OS at a particular hardware site. OS generation is part of installation process.
+
+ * An experienced user can modify the kernel sources for an OS (using ``makeconfig``), then compile a kernel for that particular hardware.
+
+ * An automated program can detect devices and select appropriate drivers for the system, however such programs tend to err on the side of caution and may end up producing a OS which is too general for hardware.
+
+ * Or, all the code may be loaded all the time, and tables may be constructed to describe the system
+
+OS Boot
+======
+
+ * Power button triggers exe of the bootstrap prog in firmware (which is some form of ROM, EPROM or EEPROM). Note that the bootstrap prob actually exe in firmware, which in general 
+   tends to be slower than RAM
+
+ * The bootstrap prog looks in secondary storage ROM for a bootloader, which is a prog to select and load the OS. The bootloader, which is a prog to select the OS. Typically stored in the MBR (Master Book Record); or else on the first partition of the storage device
+
+ * The bootloader may untar/unzip the kernel if compressed and copy it memory. Once copied, the instruction pointer (IP) is set to the first ...
+
+
+Process Concept
+===============
+
+ * A ``process`` is a prog in execution
+
+ * A prog is a passive entity, but processes are active.
+
+ * The term ``job`` usually refers to a task run in batch system.
