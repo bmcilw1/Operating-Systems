@@ -18,4 +18,4 @@ execute.o: execute.c
 	$(CPP) $(CPPFLAGS) execute.c -o execute.o
 
 clean:
-	$(RM) *.o *.o.dSYM* *~ *.out *.out.* $(EXE)
+	$(RM) *.o *.dSYM *~ *.out $(EXE)
