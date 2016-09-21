@@ -41,14 +41,24 @@ int main(int argc, char *argv[]) {
        return 1;
     } 
 
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
-        recvBuff[n] = 0;
-        if(fputs(recvBuff, stdout) == EOF) 
-            printf("\n Error : Fputs error\n");
-    } 
+    char sendBuff[256] = "ls -a\0";
 
-    if (n < 0)
-        printf("\n Read error \n");
+    while(1) {
+        if ( (n = write(sockfd, sendBuff, sizeof(sendBuff)-1)) > 0) {
+            sendBuff[n] = 0;
+            //if(fputs(sendBuff, stdout) == EOF) 
+            //    printf("\n Error : Fputs error\n");
+        } 
+
+        while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
+            recvBuff[n] = 0;
+            if(fputs(recvBuff, stdout) == EOF) 
+                printf("\n Error : Fputs error\n");
+        } 
+
+        if (n < 0)
+            printf("\n Read error \n");
+    }
 
     return 0;
 }

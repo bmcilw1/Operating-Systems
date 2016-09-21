@@ -14,11 +14,12 @@ int main() {
     // We need file descriptors for listening and connection.
     // The sockaddir_in is a struct holding information about
     // a server address.
-    int listenfd = 0, connfd = 0;
+    int listenfd = 0, connfd = 0, n = 0;
     struct sockaddr_in serv_addr; 
 
     // We require a buffer to hold information sent.
     char   sendBuff[256];
+    char   recvBuff[256];
     time_t ticks; 
 
     // The call to socket() returns a file descriptor.
@@ -44,6 +45,9 @@ int main() {
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
     listen(listenfd, 10); 
 
+    // Get the file descriptors to pipe output
+    int mePipe[2] = {STDOUT_FILENO, listenfd};
+
     while(1) {
 
         // The call to accept() accepts a message from the socket
@@ -64,12 +68,27 @@ int main() {
         );
         write(connfd, sendBuff, strlen(sendBuff)); 
 
+        // Open a pipe with which to redirect stdout
+        pipe(mePipe);
+
+        while ( (n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
+            recvBuff[n] = 0;
+            if(fputs(recvBuff, stdout) == EOF) 
+                printf("\n Error : Fputs error\n");
+        } 
+
+        // Execute the command
+        //system("ls");
+
+        // Close our end of the pipe
+        close(mePipe[0]);
+
         // We print a message to stdout to indicate we received a
         // request.
-        printf(
+        /*printf(
           "[%.24s] Received request from client!\n",
           ctime(&ticks)
-        );
+        );*/
         fflush(stdout);
 
         // Once finished accepting the message, we close the listen
@@ -77,7 +96,5 @@ int main() {
         close(connfd);
 
         sleep(1);
-
     }
-
 }
