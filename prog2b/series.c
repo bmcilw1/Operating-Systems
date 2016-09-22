@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 int sum(int n);
 int prod(int n);
@@ -33,10 +34,16 @@ int main(int argc, char *argv[])
     if (pid < 0) {
         printf("Error: forking\n");
     } else if (pid > 0) {
+        // Wait for child proc
+        wait(0);
+
         printf("Product 1 to %i: %i\n", n, prod(n));
     } else {
         // Calculate the sum
-        printf("Sum 1 to %i: %i\n", n, sum(n));
+        n = sum(n);
+
+        // Print result
+        printf("Sum 1 to %i: %i\n", atoi(argv[1]), n);
     }
 
     return 0;
