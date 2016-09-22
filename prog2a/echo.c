@@ -15,7 +15,7 @@
 
 int main(int argc, char *argv[])
 {
-    char* msgBuff = ""; 
+    char msgBuff[256] = " \0"; 
 
     if (argc != 2) {
         strcpy(msgBuff, "Usage: program_name <filename>\n");
@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
         write(fd, msgBuff, strlen(msgBuff));
         write(STDOUT_FILENO, msgBuff, strlen(msgBuff));
     }
+
+    // Clean up
+    close(fd);
 
     return 0;
 }
