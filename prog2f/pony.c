@@ -18,6 +18,8 @@ int main() {
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr; 
 
+
+    char sendBuff[256];
     time_t ticks; 
 
     // The call to socket() returns a file descriptor.
@@ -53,35 +55,17 @@ int main() {
         ticks = time(NULL);
 
         // Run command
-        FILE* output = popen("ls 2>&1", "r");
+        FILE* output = popen("ls ", "r");
         printf("popen: %p\n", output);
 
+        // Return the output
         if (output) {
-            // Get file info to prep string
-            int outfp = fileno(output);
-            struct stat outfile;
-            fstat(outfp, &outfile);
-            int outSize = outfile.st_size;
-
-            printf("fileno: %i\n", outfp);
-            printf("struct outSize: %i\n", outSize);
-
-            if (outSize) {
-
-                // Make buffer array once you know the required size
-                char *sendBuff = malloc(outSize + 1);
-
-                // Load into buffer
-                fread(sendBuff, outSize, 0, output); 
-
-                printf("\nsendBuff: %s\n", sendBuff);
+            while(fgets(sendBuff, sizeof(sendBuff), output) != NULL)
                 write(connfd, sendBuff, strlen(sendBuff)); 
-              
-                free(sendBuff);
-            }
         }
 
-        fclose(output);
+        // Close the file
+        pclose(output);
 
         // We print a message to stdout to indicate we received a
         // request.
