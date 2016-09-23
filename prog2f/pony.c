@@ -30,8 +30,8 @@ int main() {
 
     // We blank serv_addr and the buffer before setting/getting
     // their values.
-    memset(&serv_addr, '0', sizeof(serv_addr));
-    memset(outBuff, '0', sizeof(outBuff));
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    memset(outBuff, 0, sizeof(outBuff));
 
     // sin_family is whether to use IP
     // sin_addr is the address
@@ -75,31 +75,24 @@ int main() {
 
             // Run command
             FILE* output = popen(cmdBuff, "r");
-            printf("output: %p\n", output);
-            char* err = "";
-            perror(err);
-            printf("errno: %i %s\n", errno, err);
+
+            if (output == NULL)
+            {
+                printf("FAIL!\n");
+                return 1;
+            }
 
             // Return the output
-            if (output) {
-                while(fgets(sendBuff, sizeof(sendBuff), output) != NULL) {
-                    perror(err);
-                    printf("errno: %i %s\n", errno, err);
+            while (fgets(sendBuff, sizeof(sendBuff), output) != NULL)
+            {
+                printf("%s", sendBuff);
+
+                if (sizeof(outBuff) > strlen(outBuff) + strlen(sendBuff))
                     strcat(outBuff, sendBuff);
-
-                    perror(err);
-                    printf("errno: %i %s\n", errno, err);
-                }
-
-                perror(err);
-                printf("errno: %i %s\n", errno, err);
-
-                printf("outBuff: %s\n", outBuff);
-                write(connfd, sendBuff, strlen(sendBuff));
-
-                perror(err);
-                printf("errno: %i %s\n", errno, err);
             }
+
+            printf("outBuff: %s\n", outBuff);
+            write(connfd, outBuff, strlen(outBuff));
 
             printf("Clearing buffers");
 
