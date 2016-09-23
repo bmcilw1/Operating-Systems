@@ -18,8 +18,8 @@ int main() {
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr; 
 
-
     char sendBuff[256];
+    char outBuff[256];
     char cmdBuff[256];
     time_t ticks; 
 
@@ -31,6 +31,7 @@ int main() {
     // We blank serv_addr and the buffer before setting/getting
     // their values.
     memset(&serv_addr, '0', sizeof(serv_addr));
+    memset(outBuff, '0', sizeof(outBuff));
 
     // sin_family is whether to use IP
     // sin_addr is the address
@@ -45,16 +46,23 @@ int main() {
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
     listen(listenfd, 10); 
 
-    while(1) {
+    // The call to accept() accepts a message from the socket
+    // which is listening.
+    connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-        // The call to accept() accepts a message from the socket
-        // which is listening.
-        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+    // ticks holds seconds; it's used for printing out current
+    // time. This is what we send back to the client.
+    ticks = time(NULL);
 
-        // ticks holds seconds; it's used for printing out current
-        // time. This is what we send back to the client.
-        ticks = time(NULL);
+    // We print a message to stdout to indicate we received a
+    // request.
+    printf(
+      "[%.24s] Received request from client!\n",
+      ctime(&ticks)
+    );
+    fflush(stdout);
 
+    while(write(connfd, "", sizeof("") || (connfd = accept(listenfd, (struct sockaddr*)NULL, NULL) > 0))) {
         int cmdLen;
 
         // Get the command
@@ -62,34 +70,51 @@ int main() {
             printf("Error: recv %i\n", errno);
         }
 
-        printf("cmdBuff: %s\n", cmdBuff);
+        if (strlen(cmdBuff) > 0) {
+            printf("cmdBuff: %s\n", cmdBuff);
 
-        // Run command
-        FILE* output = popen(cmdBuff, "r");
+            // Run command
+            FILE* output = popen(cmdBuff, "r");
+            printf("output: %p\n", output);
+            char* err = "";
+            perror(err);
+            printf("errno: %i %s\n", errno, err);
 
-        // Return the output
-        if (output) {
-            while(fgets(sendBuff, sizeof(sendBuff), output) != NULL)
-                write(connfd, sendBuff, strlen(sendBuff)); 
+            // Return the output
+            if (output) {
+                while(fgets(sendBuff, sizeof(sendBuff), output) != NULL) {
+                    perror(err);
+                    printf("errno: %i %s\n", errno, err);
+                    strcat(outBuff, sendBuff);
+
+                    perror(err);
+                    printf("errno: %i %s\n", errno, err);
+                }
+
+                perror(err);
+                printf("errno: %i %s\n", errno, err);
+
+                printf("outBuff: %s\n", outBuff);
+                write(connfd, sendBuff, strlen(sendBuff));
+
+                perror(err);
+                printf("errno: %i %s\n", errno, err);
+            }
+
+            printf("Clearing buffers");
+
+            // Clear the buffers
+            memset(cmdBuff, 0, sizeof(cmdBuff));
+            memset(sendBuff, 0, sizeof(sendBuff));
+
+            // Close the file
+            pclose(output);
         }
-
-        // Close the file
-        pclose(output);
-
-        // We print a message to stdout to indicate we received a
-        // request.
-        printf(
-          "[%.24s] Received request from client!\n",
-          ctime(&ticks)
-        );
-        fflush(stdout);
 
         // Once finished accepting the message, we close the listen
         // file descriptor.
-        close(connfd);
+        //close(connfd);
 
         sleep(1);
-
     }
-
 }

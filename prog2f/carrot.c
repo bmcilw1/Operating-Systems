@@ -13,7 +13,8 @@ int main(int argc, char *argv[]) {
 
     int    sockfd = 0, n = 0;
     char   recvBuff[256];
-    char   sendBuff[256];
+    char   inputBuff[256] = " \0";
+    char   cmdBuff[256] = " \0";
     struct sockaddr_in serv_addr; 
 
     if (argc != 2) {
@@ -22,7 +23,6 @@ int main(int argc, char *argv[]) {
     } 
 
     memset(recvBuff, '0',sizeof(recvBuff));
-    //memset(sendBuff, '0',sizeof(sendBuff));
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Error : Could not create socket \n");
@@ -44,22 +44,43 @@ int main(int argc, char *argv[]) {
        return 1;
     } 
 
-    strcpy(sendBuff, "ls");
-    printf("sendBuff: %s\n", sendBuff);
+    while(read(STDIN_FILENO, inputBuff, strlen(inputBuff))) {
+        strcat(cmdBuff, inputBuff);
+        printf("inputBuff: %s\n", inputBuff);
 
-    if (send(sockfd, sendBuff, sizeof(sendBuff), 0) < 0) {
-       printf("\n Error : Send Command Failed \n");
-       return 1;
-    } 
+        // Execute when the client hits enter
+        if (strcmp(inputBuff, "\n") == 0) {
+            printf("cmdBuff: %s\n", cmdBuff);
 
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
-        recvBuff[n] = 0;
-        if(fputs(recvBuff, stdout) == EOF) 
-            printf("\n Error : Fputs error\n");
-    } 
+            if (send(sockfd, cmdBuff, sizeof(cmdBuff), 0) < 0) {
+               printf("\n Error : Send Command Failed \n");
+               return 1;
+            } 
 
-    if (n < 0)
-        printf("\n Read error \n");
+            while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
+                printf("recvBuff: %s\n", recvBuff);
+
+                recvBuff[n] = 0;
+
+                printf("post recvBuff[n] = 0: %s\n", recvBuff);
+
+                if(fputs(recvBuff, stdout) == EOF) 
+                    printf("\n Error : Fputs error\n");
+
+                if (n < 0)
+                    printf("\n Read error \n");
+            } 
+
+            // Clear the buffers
+            memset(cmdBuff, '0', sizeof(cmdBuff));
+            memset(recvBuff,'0', sizeof(recvBuff));
+            fflush(stdout);
+
+            printf("post loop inputBuff: %s\n", inputBuff);
+        }
+    }
+
+    close(sockfd);
 
     return 0;
 }
