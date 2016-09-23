@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <time.h> 
 
 int main() {
@@ -17,8 +18,6 @@ int main() {
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr; 
 
-    // We require a buffer to hold information sent.
-    char   sendBuff[256];
     time_t ticks; 
 
     // The call to socket() returns a file descriptor.
@@ -29,7 +28,6 @@ int main() {
     // We blank serv_addr and the buffer before setting/getting
     // their values.
     memset(&serv_addr, '0', sizeof(serv_addr));
-    memset(sendBuff,   '0', sizeof(sendBuff)); 
 
     // sin_family is whether to use IP
     // sin_addr is the address
@@ -50,19 +48,40 @@ int main() {
         // which is listening.
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-
         // ticks holds seconds; it's used for printing out current
         // time. This is what we send back to the client.
         ticks = time(NULL);
 
-        // We write out the information to the client; the snprintf()
-        // statement prints the time into sendBuff, then write sends
-        // it out through the connection file descriptor.
-        snprintf(sendBuff, sizeof(sendBuff), 
-          "[%.24s] Hello!\r\n", 
-          ctime(&ticks)
-        );
-        write(connfd, sendBuff, strlen(sendBuff)); 
+        // Run command
+        FILE* output = popen("ls 2>&1", "r");
+        printf("popen: %p\n", output);
+
+        if (output) {
+            // Get file info to prep string
+            int outfp = fileno(output);
+            struct stat outfile;
+            fstat(outfp, &outfile);
+            int outSize = outfile.st_size;
+
+            printf("fileno: %i\n", outfp);
+            printf("struct outSize: %i\n", outSize);
+
+            if (outSize) {
+
+                // Make buffer array once you know the required size
+                char *sendBuff = malloc(outSize + 1);
+
+                // Load into buffer
+                fread(sendBuff, outSize, 0, output); 
+
+                printf("\nsendBuff: %s\n", sendBuff);
+                write(connfd, sendBuff, strlen(sendBuff)); 
+              
+                free(sendBuff);
+            }
+        }
+
+        fclose(output);
 
         // We print a message to stdout to indicate we received a
         // request.
