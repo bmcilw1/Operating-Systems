@@ -46,23 +46,23 @@ int main() {
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
     listen(listenfd, 10); 
 
-    // The call to accept() accepts a message from the socket
-    // which is listening.
-    connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+    while(1) {
+        // The call to accept() accepts a message from the socket
+        // which is listening.
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-    // ticks holds seconds; it's used for printing out current
-    // time. This is what we send back to the client.
-    ticks = time(NULL);
+        // ticks holds seconds; it's used for printing out current
+        // time. This is what we send back to the client.
+        ticks = time(NULL);
 
-    // We print a message to stdout to indicate we received a
-    // request.
-    printf(
-      "[%.24s] Received request from client!\n",
-      ctime(&ticks)
-    );
-    fflush(stdout);
+        // We print a message to stdout to indicate we received a
+        // request.
+        printf(
+          "[%.24s] Received request from client!\n",
+          ctime(&ticks)
+        );
+        fflush(stdout);
 
-    while(write(connfd, "", sizeof("") || (connfd = accept(listenfd, (struct sockaddr*)NULL, NULL) > 0))) {
         int cmdLen;
 
         // Get the command
@@ -82,21 +82,16 @@ int main() {
                 return 1;
             }
 
-            // Return the output
+            // get the output
             while (fgets(sendBuff, sizeof(sendBuff), output) != NULL)
-            {
-                printf("%s", sendBuff);
-
                 if (sizeof(outBuff) > strlen(outBuff) + strlen(sendBuff))
                     strcat(outBuff, sendBuff);
-            }
 
-            printf("outBuff: %s\n", outBuff);
+            // Return the output
             write(connfd, outBuff, strlen(outBuff));
 
-            printf("Clearing buffers");
-
             // Clear the buffers
+            memset(outBuff, 0, sizeof(outBuff));
             memset(cmdBuff, 0, sizeof(cmdBuff));
             memset(sendBuff, 0, sizeof(sendBuff));
 
@@ -106,7 +101,7 @@ int main() {
 
         // Once finished accepting the message, we close the listen
         // file descriptor.
-        //close(connfd);
+        close(connfd);
 
         sleep(1);
     }
