@@ -12,9 +12,9 @@
 int main(int argc, char *argv[]) {
 
     int    sockfd = 0, n = 0;
-    char   recvBuff[256];
-    char   inputBuff[256] = " \0";
-    char   cmdBuff[256] = " \0";
+    char   recvBuff[1024];
+    char   inputBuff[1024] = " \0";
+    char   cmdBuff[1024] = " \0";
     struct sockaddr_in serv_addr; 
 
     if (argc != 2) {

@@ -18,9 +18,9 @@ int main() {
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr; 
 
-    char sendBuff[256];
-    char outBuff[256];
-    char cmdBuff[256];
+    char sendBuff[1024];
+    char outBuff[1024];
+    char cmdBuff[1024];
     time_t ticks; 
 
     // The call to socket() returns a file descriptor.
@@ -74,6 +74,11 @@ int main() {
             printf("cmdBuff: %s\n", cmdBuff);
 
             // Run command
+            if (sizeof(cmdBuff) < strlen("exec bash -c '") + strlen(cmdBuff) + 1) {
+                strcpy(cmdBuff, strcat("exec bash -c '", cmdBuff));
+                strcat(cmdBuff, "'");
+            }
+
             FILE* output = popen(cmdBuff, "r");
 
             if (output == NULL)
