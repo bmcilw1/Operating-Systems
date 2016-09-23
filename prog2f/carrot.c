@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 
     int    sockfd = 0, n = 0;
     char   recvBuff[256];
+    char   sendBuff[256];
     struct sockaddr_in serv_addr; 
 
     if (argc != 2) {
@@ -21,6 +22,8 @@ int main(int argc, char *argv[]) {
     } 
 
     memset(recvBuff, '0',sizeof(recvBuff));
+    //memset(sendBuff, '0',sizeof(sendBuff));
+
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Error : Could not create socket \n");
         return 1;
@@ -38,6 +41,14 @@ int main(int argc, char *argv[]) {
 
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
        printf("\n Error : Connect Failed \n");
+       return 1;
+    } 
+
+    strcpy(sendBuff, "ls");
+    printf("sendBuff: %s\n", sendBuff);
+
+    if (send(sockfd, sendBuff, sizeof(sendBuff), 0) < 0) {
+       printf("\n Error : Send Command Failed \n");
        return 1;
     } 
 

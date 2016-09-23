@@ -20,6 +20,7 @@ int main() {
 
 
     char sendBuff[256];
+    char cmdBuff[256];
     time_t ticks; 
 
     // The call to socket() returns a file descriptor.
@@ -54,9 +55,17 @@ int main() {
         // time. This is what we send back to the client.
         ticks = time(NULL);
 
+        int cmdLen;
+
+        // Get the command
+        if((cmdLen = recv(connfd, cmdBuff, sizeof(cmdBuff), 0)) < 0) {
+            printf("Error: recv %i\n", errno);
+        }
+
+        printf("cmdBuff: %s\n", cmdBuff);
+
         // Run command
-        FILE* output = popen("ls ", "r");
-        printf("popen: %p\n", output);
+        FILE* output = popen(cmdBuff, "r");
 
         // Return the output
         if (output) {
