@@ -1,42 +1,38 @@
 // Brian McIlwain
 // Op Sys hw 3
 // Calculating Sine
+//  Using OpenMP, write a program which accepts a floating-point number as a 
+//  command-line argument then calculates the sine, cosine, and tangent of the number. 
+//  Write the function double sin(double x) which calculates the sine of a given argument 
+//  x in parallel using the Taylor series formula for the sine function. Obtain the 
+//  cosine and tangent using trigonometric identities. Output the results. Call this sine.c.
 
 #include<stdio.h>
 #include<stdlib.h>
 
+double sin(double x);
+
 int main(int argc, char* argv[]) {
-    int start, stop, step, i = 0;
-    long long sum = 0, prod = 1;
+    int i = 0;
+    double num;
 
     // Input validation
-    if(argc != 4) {
-        printf("Usage: ./program start stop step\n");
+    if(argc != 2) {
+        printf("Usage: ./program num\n");
         exit(EXIT_FAILURE);
     }
 
     // Get input
-    start = atoi(argv[1]);
-    stop = atoi(argv[2]);
-    step = atoi(argv[3]);
-
-    // Check for product = 0 due to no distance between bounds edge case
-    if (stop - start <= 0 ) {
-        printf("Sum: 0\n");
-        printf("Product: 0\n");
-        return 0;
-    }
-
-    // Do that work
-# pragma omp parallel for reduction(*:prod), reduction(+:sum)
-    for(i = start; i <= stop; i += step) {
-        sum += i;
-        prod *= i;
-    }
+    num = atof(argv[1]);
 
     // Display result
-    printf("Sum: %lld\n", sum);
-    printf("Product: %lld\n", prod);
+    printf("sin: %d\n", sin(num));
+    printf("cos: %d\n", sin(num));
+    printf("tan: %d\n", sin(num));
 
+    return 0;
+}
+
+double sin(double x) {
     return 0;
 }
