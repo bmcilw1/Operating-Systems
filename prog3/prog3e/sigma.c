@@ -24,18 +24,21 @@ int main(int argc, char* argv[]) {
     stop = atoi(argv[2]);
     step = atoi(argv[3]);
 
+    // Check for product = 0 due to no distance between bounds edge case
     if (stop - start <= 0 ) {
         printf("Sum: 0\n");
         printf("Product: 0\n");
         return 0;
     }
 
+    // Do that work
 # pragma omp parallel for reduction(*:prod), reduction(+:sum)
     for(i = start; i <= stop; i += step) {
         sum += i;
         prod *= i;
     }
 
+    // Display result
     printf("Sum: %i\n", sum);
     printf("Product: %i\n", prod);
 
