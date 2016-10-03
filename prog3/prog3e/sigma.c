@@ -10,8 +10,8 @@
 #include<stdlib.h>
 
 int main(int argc, char* argv[]) {
-    int start, stop, step;
-    int sum = 0, prod = 1, i = 0;
+    int start, stop, step, i = 0;
+    long long sum = 0, prod = 1;
 
     // Input validation
     if(argc != 4) {
@@ -39,8 +39,8 @@ int main(int argc, char* argv[]) {
     }
 
     // Display result
-    printf("Sum: %i\n", sum);
-    printf("Product: %i\n", prod);
+    printf("Sum: %lld\n", sum);
+    printf("Product: %lld\n", prod);
 
     return 0;
 }
