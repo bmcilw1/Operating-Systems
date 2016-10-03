@@ -6,8 +6,38 @@
 //  product from start to stop (inclusive) in increments of step. Be sure to use the 
 //  proper reductions, and check to be sure that the results are correct. Call this sigma.c.
 
+#include<stdio.h>
+#include<stdlib.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
+    int start, stop, step;
+    int sum = 0, prod = 1, i = 0;
+
+    // Input validation
+    if(argc != 4) {
+        printf("Usage: ./program start stop step\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Get input
+    start = atoi(argv[1]);
+    stop = atoi(argv[2]);
+    step = atoi(argv[3]);
+
+    if (stop - start <= 0 ) {
+        printf("Sum: 0\n");
+        printf("Product: 0\n");
+        return 0;
+    }
+
+# pragma omp parallel for reduction(*:prod), reduction(+:sum)
+    for(i = start; i <= stop; i += step) {
+        sum += i;
+        prod *= i;
+    }
+
+    printf("Sum: %i\n", sum);
+    printf("Product: %i\n", prod);
 
     return 0;
 }
