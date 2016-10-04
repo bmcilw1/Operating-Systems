@@ -9,26 +9,55 @@
 
 #include<stdio.h>
 #include<pthread.h>
+
+// Array size
 #define SIZE 4
 
-double dot(double *u, double *v, int start, int end);
+typedef struct {
+    double *u;
+    double *v;
+    int start;
+    int end;
+    double ret_val;
+} dot_args;
+
+void* dot(void* void_args);
 
 int main() {
+    // Input arrays
     double u[SIZE] = {0, 1, 2, 3};
-
     double v[SIZE] = {3, 2, 1, 0};
+    
+    // Default thread attr
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
 
-    printf("dot: %f\n", dot(u,v, 0, 4));
+    pthread_t tid[2];
+
+    // Me args
+    dot_args args1 = { .u = u, .v = v, .start = 0, .end = SIZE/2 };
+    dot_args args2 = { .u = u, .v = v, .start = SIZE/2, .end = SIZE };
+
+    // Spawn threads
+    pthread_create(&tid[0], &attr, dot, &args1);
+    pthread_create(&tid[1], &attr, dot, &args2);
+
+    // Join upon completion
+    pthread_join(tid[0], NULL);
+    pthread_join(tid[1], NULL);
+
+    // Get return value
+    printf("dot: %f\n", args1.ret_val + args2.ret_val);
 
     return 0;
 }
 
-double dot(double *u, double *v, int start, int end) {
-    double ans = 0;
+void* dot(void* void_args) {
+    dot_args* args = (dot_args *)void_args;
     int i;
 
-    for (i=start; i < SIZE && i < end; i++)
-        ans += u[i]*v[i];
+    for (i=args->start; i < SIZE && i < args->end; i++)
+        args->ret_val += args->u[i]*args->v[i];
 
-    return ans;
+    return NULL;
 }
