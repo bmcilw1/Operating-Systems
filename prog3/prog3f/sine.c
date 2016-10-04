@@ -20,7 +20,7 @@ double sin(double x);
 double fact(int x);
 
 // Dynamic programming var
-double fact_arr[FACT_MAX] = {0};
+double fact_arr[FACT_MAX*2 + 1] = {0};
 
 int main(int argc, char* argv[]) {
     double num;
@@ -57,8 +57,10 @@ double sin(double x) {
 double fact(int x) {
     if (x <= 1)
         return 1;
-    else if (fact_arr[x] == 0)
+    else if (fact_arr[x] == 0) {
+        printf("x fact cache: %i\n", x);
         fact_arr[x] = x*fact(x-1);
+    }
 
     return fact_arr[x];
 }
