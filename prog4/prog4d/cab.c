@@ -46,21 +46,26 @@ void usage(char *name) {
 // detail depending on the value of the int verbosity.
 void copy(char *i, char *o, int s, int e, int n) {
     printf("copy i: %s, o: %s, s: %i, e: %i, n: %i\n", i, o, s, e, n);
-    char *cmd = "";
-    if (n >= 0) { // by num not start & end byte
+    char *cmd="", *a_of="", *a_if="", *a_cnt="", *a_seek="";
 
-    } else if (e >= 0) { // e not EOF
-
-    } else { // Default case e as EOF
-        cmd = "head -c -0";
-        system(cmd);
+    // Set up args
+    if (i != "") sprintf(a_if, "if=%s", i);
+    if (o != "") sprintf(a_of, "of=%s", o);
+    if (s >= 0) sprintf(a_seek, "skip=%i", s);
+    if (n >= 0) sprintf(a_cnt, "count=%i", n);
+    if (e >= 0) {
+        if (s >= 0) sprintf(a_cnt, "count=%i", e-s);
+        else sprintf(a_cnt, "count=%i", e);
     }
+
+    sprintf(cmd, "dd ibs=1 status=noxfer %s %s %s %s", a_if, a_of, a_seek, a_cnt);
+    printf("cmd: %s\n"cmd);
 }
 
 
 // Demonstrate getopt_long functionality.
 int main(int argc, char **argv) {
-  int n=-1, s=0, e=-1;
+  int n=-1, s=-1, e=-1;
   char *i="", *o="";
   int c, digit_optind = 0;
 
@@ -72,8 +77,8 @@ int main(int argc, char **argv) {
   // Fifth  field:  number of bytes to copy
   // Sixth  field:  display help and version info
   static struct option long_options[] = {
-      {"input",     1, 0, 'i'},
-      {"output",    1, 0, 'o'},
+      {"input",     0, 0, 'i'},
+      {"output",    0, 0, 'o'},
       {"start",     0, 0, 's'},
       {"end",       0, 0, 'e'},
       {"num",       0, 0, 'n'},
@@ -121,6 +126,12 @@ int main(int argc, char **argv) {
   // If more CL arguments were passed than the option list allowed,
   // print usage and exit.
   if (optind < argc) {
+    usage(argv[0]);
+    exit(EXIT_FAILURE);
+  }
+
+  // Can't specify n and s and e
+  if (n >= 0 && s >= 0 && e >= 0) {
     usage(argv[0]);
     exit(EXIT_FAILURE);
   }
