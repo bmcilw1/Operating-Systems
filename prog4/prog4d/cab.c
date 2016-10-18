@@ -46,12 +46,14 @@ void usage(char *name) {
 // detail depending on the value of the int verbosity.
 void copy(char *i, char *o, int s, int e, int n) {
     printf("copy i: %s, o: %s, s: %i, e: %i, n: %i\n", i, o, s, e, n);
+    char *cmd = "";
     if (n >= 0) { // by num not start & end byte
 
     } else if (e >= 0) { // e not EOF
 
     } else { // Default case e as EOF
-
+        cmd = "head -c -0";
+        system(cmd);
     }
 }
 
