@@ -34,7 +34,8 @@ void usage(char *name) {
   printf("    -s, --start\n");
   printf("        hex bit number to start at (default 0)\n\n");
   printf("    -e, --end\n");
-  printf("        hex bit number to end at (default input EOF)\n\n");
+  printf("        hex bit number to end at (default input EOF)\n");
+  printf("        must come after start if specified\n");
   printf("    -n, --num\n");
   printf("        number of bytes to copy. Cannot use with both -s -n simultaneously\n\n");
   printf("    -v, --version\n");
@@ -45,21 +46,24 @@ void usage(char *name) {
 // Return sum from m to n in steps of j. Also print steps of the process, with
 // detail depending on the value of the int verbosity.
 void copy(char *i, char *o, int s, int e, int n) {
-    printf("copy i: %s, o: %s, s: %i, e: %i, n: %i\n", i, o, s, e, n);
-    char *cmd="", *a_of="", *a_if="", *a_cnt="", *a_seek="";
+    char cmd[1024]="", a_of[256]="", a_if[256]="", a_cnt[256]="", a_skip[256]="";
 
     // Set up args
     if (i != "") sprintf(a_if, "if=%s", i);
     if (o != "") sprintf(a_of, "of=%s", o);
-    if (s >= 0) sprintf(a_seek, "skip=%i", s);
+    if (s >= 0) sprintf(a_skip, "skip=%i", s);
     if (n >= 0) sprintf(a_cnt, "count=%i", n);
     if (e >= 0) {
         if (s >= 0) sprintf(a_cnt, "count=%i", e-s);
+        else if (n >= 0) sprintf(a_skip, "skip=%i", e-n);
         else sprintf(a_cnt, "count=%i", e);
     }
 
-    sprintf(cmd, "dd ibs=1 status=noxfer %s %s %s %s", a_if, a_of, a_seek, a_cnt);
-    printf("cmd: %s\n"cmd);
+    sprintf(cmd, "dd ibs=1 status=noxfer %s %s %s %s", a_if, a_of, a_skip, a_cnt);
+    printf("cmd: %s\n", cmd);
+
+    // Run it
+    system(cmd);
 }
 
 
@@ -136,8 +140,8 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  if (argc == 1) usage(argv[0]);
-  else           copy(i, o, s, e, n);
+  copy(i, o, s, e, n);
+
   exit(EXIT_SUCCESS);
 
 }
