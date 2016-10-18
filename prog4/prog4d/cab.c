@@ -24,6 +24,7 @@
 
 // Print usage message.
 void usage(char *name) {
+  printf("cab version 0.1\n");
   printf("usage: %s [options]\n\n", name);
   printf("  options:\n");
   printf("    -i, --input\n");
@@ -31,13 +32,11 @@ void usage(char *name) {
   printf("    -o, --output  \n");
   printf("        filename to write to (default stdout)\n\n");
   printf("    -s, --start\n");
-  printf("        hex bit number to start at (default 0)\n");
-  printf("        cannot use with -n \n\n");
+  printf("        hex bit number to start at (default 0)\n\n");
   printf("    -e, --end\n");
-  printf("        hex bit number to end at (default input EOF)\n");
-  printf("        cannot use with -n \n\n");
+  printf("        hex bit number to end at (default input EOF)\n\n");
   printf("    -n, --num\n");
-  printf("        number of bytes to copy. Cannot use with -s -n\n\n");
+  printf("        number of bytes to copy. Cannot use with both -s -n simultaneously\n\n");
   printf("    -v, --version\n");
   printf("        show version and help message\n\n");
 }
@@ -45,28 +44,15 @@ void usage(char *name) {
 
 // Return sum from m to n in steps of j. Also print steps of the process, with
 // detail depending on the value of the int verbosity.
-int sum(int m, int n, int j, int verbosity) {
-  int s = 0, k = 1, i;
-  if (verbosity > 2)
-   printf("Start: %4d\nStop:  %4d\nStep:  %4d\n", m, n, j);
-  if (verbosity > 1)
-   printf("Initializing sum to 0.\n");
-  for (i=m; i<=n; i+=j) {
-    s += i;
-    if (verbosity > 1)
-      printf("Iteration %2d:   ", k);
-    if (verbosity > 0)
-      printf("i = %2d:   s = %4d", i, s); 
-    if (verbosity > 2)
-      printf("   (let s = %d + %d)", s-i, i); 
-    if (verbosity > 0)
-      printf("\n");
-    k++;
-  }
-  if (verbosity > 0)
-    printf("Final sum: ");
-  printf("%d\n", s);
-  return s;
+void copy(char *i, char *o, int s, int e, int n) {
+    printf("copy i: %s, o: %s, s: %i, e: %i, n: %i\n", i, o, s, e, n);
+    if (n >= 0) { // by num not start & end byte
+
+    } else if (e >= 0) { // e not EOF
+
+    } else { // Default case e as EOF
+
+    }
 }
 
 
@@ -77,10 +63,12 @@ int main(int argc, char **argv) {
   int c, digit_optind = 0;
 
   // This struct contains the long options.
-  // First  field:  name
-  // Second field:  has required argument
-  // Third  field:  flag
-  // Fourth field:  short option character
+  // First  field:  input file
+  // Second field:  output file
+  // Third  field:  start position
+  // Fourth field:  end position
+  // Fifth  field:  number of bytes to copy
+  // Sixth  field:  display help and version info
   static struct option long_options[] = {
       {"input",     1, 0, 'i'},
       {"output",    1, 0, 'o'},
@@ -136,7 +124,7 @@ int main(int argc, char **argv) {
   }
 
   if (argc == 1) usage(argv[0]);
-  else           printf("Runit\n");
+  else           copy(i, o, s, e, n);
   exit(EXIT_SUCCESS);
 
 }
