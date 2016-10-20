@@ -43,8 +43,7 @@ void usage(char *name) {
 }
 
 
-// Return sum from m to n in steps of j. Also print steps of the process, with
-// detail depending on the value of the int verbosity.
+// Wrapper for dd
 void copy(char *i, char *o, int s, int e, int n) {
     char cmd[1024]="", a_of[256]="", a_if[256]="", a_cnt[256]="", a_skip[256]="";
 
@@ -60,7 +59,7 @@ void copy(char *i, char *o, int s, int e, int n) {
     }
 
     sprintf(cmd, "dd ibs=1 status=noxfer %s %s %s %s", a_if, a_of, a_skip, a_cnt);
-    printf("cmd: %s\n", cmd);
+    //printf("cmd: %s\n", cmd); // Debugging
 
     // Run it
     system(cmd);
@@ -140,8 +139,8 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
+  // Run the function
   copy(i, o, s, e, n);
 
   exit(EXIT_SUCCESS);
-
 }
