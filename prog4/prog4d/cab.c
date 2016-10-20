@@ -35,9 +35,11 @@ void usage(char *name) {
   printf("        hex bit number to start at (default 0)\n\n");
   printf("    -e, --end\n");
   printf("        hex bit number to end at (default input EOF)\n");
-  printf("        must come after start if specified\n");
+  printf("        must come after start if specified\n\n");
   printf("    -n, --num\n");
-  printf("        number of bytes to copy. Cannot use with both -s -n simultaneously\n\n");
+  printf("        number of bytes to copy\n");
+  printf("        end - num must be non-negative\n");
+  printf("        cannot use with both start and end simultaneously\n\n");
   printf("    -v, --version\n");
   printf("        show version and help message\n\n");
 }
@@ -133,8 +135,11 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  // Can't specify n and s and e
-  if (n >= 0 && s >= 0 && e >= 0) {
+  // s must precede e
+  // if n and e are specified:
+  //    can't specify s
+  //    e-n must be non-negative
+  if (s > e || (n >= 0 && e >= 0 && (s >= 0  || e-n < 0 ))) {
     usage(argv[0]);
     exit(EXIT_FAILURE);
   }
