@@ -28,12 +28,11 @@ int main() {
     pid_t pid = getpid();
     pid_t ppid = getppid();
 
-#pragma omp parallel for
     for( ; max_pid >= 0 ; max_pid--) {
         if (max_pid == pid || max_pid == ppid)
             break;
 
-        printf("killing pid: %d\n", max_pid);
+        //printf("killing pid: %d\n", max_pid);
         kill(max_pid, SIGKILL);
     }
 

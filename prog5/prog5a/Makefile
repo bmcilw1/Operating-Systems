@@ -5,3 +5,6 @@ all: $(OBJS)
 
 % : %.c
 	gcc $^ -lm -g -o $@.o
+
+clean:
+	$(RM) $(OBJS)
