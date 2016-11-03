@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -15,9 +16,9 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    pid_t pid = (pid_t)atoi(argv[1]);
+    int pid = atoi(argv[1]);
 
-    printf("SIGSEGV pid: %i, %i\n", (int)pid, kill(SIGSEGV, pid));
+    printf("SIGSEGV pid: %i, %i\n", pid, kill(pid, SIGSEGV));
 
     return 0;
 }

@@ -9,6 +9,7 @@
 #include <execinfo.h>
 #include <signal.h>
 
+// https://www.gnu.org/software/libc/manual/html_node/Backtraces.html
 void segv_handler(int signal) {
   void *array[10];
   size_t size;
